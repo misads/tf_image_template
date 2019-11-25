@@ -31,5 +31,17 @@ A template for tensorflow image handling project.
 
 ### Train your own network
 ```shell script
-    python main.py --train --output_dir checkpoint --epochs 100 [--resume]
+    python main.py --train --input_dir train/ --output_dir checkpoint/ --epochs 100 --which_direction BtoA [--resume]
 ```
+
+### Test the model
+```shell script
+    python main.py --test --input_dir val/ --output_dir test_results/ --checkpoint checkpoint/ 
+```
+
+### Visulization
+```shell script
+    tensorboard --logdir=checkpoint
+```
+
+--train --input_dir c --val_dir val --output_dir checkpoint --epochs 200 --which_direction BtoA --eva_freq 250 --checkpoint checkpoint/model-2499

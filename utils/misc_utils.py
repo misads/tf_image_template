@@ -18,7 +18,6 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow.python import pywrap_tensorflow
-import matplotlib.pyplot as plt
 
 
 #############################
@@ -232,12 +231,12 @@ def progress_bar(current, total, pre_msg=None, msg=None):
 #############################
 
 
-def histogram_demo(image, title=None):
-    if title:
-        plt.title(title)
-
-    plt.hist(image.ravel(), 256, [0, 256])  # 直方图
-    plt.show()
+# def histogram_demo(image, title=None):
+#     if title:
+#         plt.title(title)
+#
+#     plt.hist(image.ravel(), 256, [0, 256])  # 直方图
+#     plt.show()
 
 
 def hwc_to_whc(img):
@@ -355,6 +354,12 @@ def create_global_step():
     return incr_global_step
 
 
+def limit_gpu_usage(max_usage=1.0):
+    tf_config = tf.ConfigProto()
+    tf_config.gpu_options.per_process_gpu_memory_fraction = max_usage
+    return tf_config
+
+
 def allow_gpu_growth_config():
     """
         example:
@@ -363,8 +368,9 @@ def allow_gpu_growth_config():
             pass
         :return:
     """
-    tfconfig = tf.ConfigProto(allow_soft_placement=True)
-    tfconfig.gpu_options.allow_growth = True
+    tf_config = tf.ConfigProto(allow_soft_placement=True)
+    tf_config.gpu_options.allow_growth = True
+    return tf_config
 
 
 def save_ckpt(sess, path='checkpoint/model.ckpt', step=None, max_to_keep=50):

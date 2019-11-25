@@ -1,10 +1,16 @@
 # encoding=utf-8
+"""
+A pipeline for tf_image_template
+
+Author: xuhaoyu@tju.edu.cn
+
+update 11.25
+
+"""
 import os
-import numpy as np
-import cv2
 import tensorflow as tf
 
-from utils.misc_utils import get_file_paths_by_pattern, get_file_name, create_global_step
+from utils.misc_utils import get_file_paths_by_pattern, get_file_name, create_global_step, color_print
 
 
 class PipeLineV1(object):
@@ -43,7 +49,7 @@ class PipeLineV1(object):
                 raw_input = tf.image.resize_images(raw_input, size=[reshape[1], reshape[0]],
                                                    method=tf.image.ResizeMethod.BICUBIC)
 
-            print("%d images loaded in '%s'" % (len(input_paths), path))
+            color_print("%d images loaded in '%s'" % (len(input_paths), path), 2)
 
         self.__images = raw_input
         self.__image_paths = input_paths
@@ -52,9 +58,7 @@ class PipeLineV1(object):
         self._shuffled = shuffle
         self._image_shape = reshape
         self._paths = paths
-        # self._images = []
         # self._labels = []
-        # self._step = 0
 
     def _get_input_paths(self, path):
         input_paths = get_file_paths_by_pattern(path, pattern='*.jpg')
