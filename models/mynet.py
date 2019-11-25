@@ -12,7 +12,7 @@ import math
 from models.losses import L1, L2
 from models.process import transform, depart_input_target_pair, deprocess, upscale
 from models.base_model import BaseModel
-from models.model import generator
+from models.module import generator
 from utils.misc_utils import *
 
 

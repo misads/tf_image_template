@@ -5,28 +5,28 @@ A template for tensorflow image handling project.
 
 ```yaml
 .
-├── checkpoints
-│   └── sample_0001.ckpt
+├── checkpoint
+│   └── model_0001.ckpt
 ├── config.py
 ├── data_loader
 │   ├── datadb.py
 │   ├── data_loader.py
 │   ├── imdb.py
-│   ├── pipeline.py
-│   └── transform.py
+│   └── pipeline.py  # image loading pipeline
+├── main.py
 ├── models
 │   ├── base_model.py
-│   ├── layers.py
-│   ├── losses.py
+│   ├── layers.py  # layers (e.g. conv, devonv, batchnorm)
+│   ├── losses.py  # common losses
+│   ├── module.py  # network modules
 │   ├── mynet.py
-│   ├── resnet.py
-│   └── vgg.py
+│   └── process.py  # image (pre)process
 ├── README.md
 ├── scripts
 │   └── test_batch.py
-├── main.py
 └── utils
     └── misc_utils.py
+
 ```
 
 ### Train your own network
@@ -44,4 +44,3 @@ A template for tensorflow image handling project.
     tensorboard --logdir=checkpoint
 ```
 
---train --input_dir c --val_dir val --output_dir checkpoint --epochs 200 --which_direction BtoA --eva_freq 250 --checkpoint checkpoint/model-2499
