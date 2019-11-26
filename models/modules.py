@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from models.layers import g_deconv, batchnorm, g_conv, d_conv
+from models.ops import g_deconv, batchnorm, g_conv, d_conv
 from utils.misc_utils import lrelu
 
 

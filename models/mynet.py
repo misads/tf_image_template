@@ -9,11 +9,21 @@ update 11.25
 """
 import math
 
+import os
+import pdb
+import random
+
+import cv2
+import sys
+import time
+import numpy as np
+import tensorflow as tf
+
 from models.losses import L1, L2
 from models.process import transform, depart_input_target_pair, deprocess, upscale
 from models.base_model import BaseModel
-from models.module import generator
-from utils.misc_utils import *
+from models.modules import generator
+import utils.misc_utils as utils
 
 
 class MyNet(BaseModel):
@@ -229,12 +239,12 @@ class MyNet(BaseModel):
     def test(self):
         args = self._args
 
-        tfconfig = allow_gpu_growth_config()
+        tfconfig = utils.allow_gpu_growth_config()
         sv = tf.train.Supervisor(logdir=None, save_summaries_secs=0, saver=None)
         with sv.managed_session(config=tfconfig) as sess:
             self.restore(sess)
             start_step = sess.run(sv.global_step)
-            color_print("Test on checkpoint with step: %d" % start_step, 3)
+            utils.color_print("Test on checkpoint with step: %d" % start_step, 3)
 
             results = self._eval(sess)
             im_paths, imgs = [], []
@@ -262,11 +272,18 @@ class MyNet(BaseModel):
 
         logdir = args.log_dir if (args.trace_freq > 0 or args.summary_freq > 0) else None
 
-        tfconfig = allow_gpu_growth_config()
+        tfconfig = utils.allow_gpu_growth_config()
         sv = tf.train.Supervisor(logdir=logdir, save_summaries_secs=0, saver=None)
         with sv.managed_session(config=tfconfig) as sess:
             # print parameter info
             print("Parameter Count =", sess.run(self._debug['parameter_count']))
+            """
+                debug mode
+            """
+            if args.debug:
+                for k, v in sess.run(self._debug['variables']):
+                    print("   '%s' shape=%s" % (k, str(v)))
+                pdb.set_trace()
 
             start_step = 0
             """
@@ -276,7 +293,7 @@ class MyNet(BaseModel):
             if args.checkpoint is not None or args.resume:
                 self.restore(sess)
                 start_step = sess.run(sv.global_step)
-                color_print("Resume training from step: %d" % start_step, 3)
+                utils.color_print("Resume training from step: %d" % start_step, 3)
                 sys.stdout.flush()
 
             """
@@ -332,10 +349,10 @@ class MyNet(BaseModel):
                     # progress bar
                     msg = '(loss) L1:%.3f L2:%.3f | ETA: %s' % (
                         results["L1_loss"], results["L2_loss"],
-                        format_time(remaining))
+                        utils.format_time(remaining))
                     pre_msg = 'Epoch:%d ' % train_epoch
                     if train_epoch > 0 and train_step > 0:
-                        progress_bar(train_step - 1, self._steps_per_epoch, pre_msg, msg)
+                        utils.progress_bar(train_step - 1, self._steps_per_epoch, pre_msg, msg)
 
                 """
                     Save the model
@@ -349,21 +366,6 @@ class MyNet(BaseModel):
                 """
                 if step != 0 and step % args.eva_freq == 0:
                     self._eval(sess)
-                    # self._average['ssim'] = []
-                    # self._average['psnr'] = []
-                    # print()
-                    # sys.stdout.flush()
-                    # for i in range(500//args.batch_size):
-                    #     progress_bar(i, 500//args.batch_size, 'Eva.... ')
-                    #     run_dict = self._eva
-                    #     run_dict['debug'] = self._debug
-                    #     run_dict['images'] = self._images
-                    #     # sess.run to fetch results
-                    #     results = sess.run(run_dict, feed_dict={self._training: False})
-                    #     self._eval(results)
-                    #
-                    # print('psnr: %f' % np.average(self._average['psnr']))
-                    # print('ssim: %f' % np.average(self._average['ssim']))
 
     def _eval(self, sess):
         args = self._args
@@ -392,7 +394,7 @@ class MyNet(BaseModel):
         print()
         sys.stdout.flush()
         for i in range(500 // args.batch_size):
-            progress_bar(i, 500 // args.batch_size, 'Eva.... ')
+            utils.progress_bar(i, 500 // args.batch_size, 'Eva.... ')
             run_dict = self._eva
             run_dict['debug'] = self._debug
             run_dict['images'] = self._images

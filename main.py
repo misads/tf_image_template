@@ -19,12 +19,13 @@ parser.add_argument("--input_dir", required=True, help="path to folder containin
 parser.add_argument("--val_dir", help="path to validation folder containing images")
 
 parser.add_argument("--log_dir", default='logs', help="path to save TensorBoard log files")
-parser.add_argument("--output_dir", required=True, help="where to put output files")
+parser.add_argument("--output_dir", default='checkpoint', help="where to put output files")
 
 # mode
 parser.add_argument("--train", action="store_true", help="train mode")
 parser.add_argument("--resume", action="store_true", help="resume training from latest checkpoint in checkpoint/ folder")
 parser.add_argument("--test", action="store_true", help="test mode")
+parser.add_argument("--debug", action="store_true", help="debug mode")
 parser.add_argument("--export", action="store_true", help="export mode")
 
 parser.add_argument("--seed", type=int)
@@ -85,6 +86,7 @@ if __name__ == '__main__':
         test_inputs = PipeLine(args.input_dir, shuffle=False, reshape=None, batch_size=args.batch_size)
         model = MyNet(args, test_inputs)
         model.test()
-
     else:
-        raise Exception('Mode not explicit, please try [--train] or [--test]')
+        raise Exception('Mode not specified, please use [--train] or [--test]')
+
+

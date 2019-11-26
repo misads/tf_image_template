@@ -69,14 +69,7 @@ class BaseModel(object):
         variable_shapes = [tf.shape(v) for v in tf.trainable_variables()]  # or tf.global_variables
 
         scope = None
-        var_list = []
-        varshape_list = []
-        for k, v in zip(variables, variable_shapes):
-            if not scope or k[:len(scope)] == scope:
-                var_list.append(tf.constant(k.name))
-                varshape_list.append(v)
-
-        self._debug['variables'] = list(zip(var_list, varshape_list))
+        self._debug['variables'] = utils.get_all_tf_variables(trainable_only=True, scope=scope)
         # Usage:
         # for k, v in sess.run(self._debug['variables']):
         #     print("   '%s' shape=%s" % (k, str(v)))
@@ -112,6 +105,9 @@ class BaseModel(object):
                         self.eval(results)
             :return:
         """
+        raise NotImplementedError
+
+    def train(self):
         raise NotImplementedError
 
     # used in test time, no backprop

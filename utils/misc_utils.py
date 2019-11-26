@@ -6,6 +6,9 @@ Author: xuhaoyu@tju.edu.cn
 
 update 11.25
 
+Usage:
+    `import misc_utils as utils`
+    `utils.func_name()`  # to call functions in this file
 """
 import glob
 import os
@@ -431,34 +434,46 @@ def get_variables_in_ckpt_file(file_name):
                   "with SNAPPY.")
 
 
-def print_param_count(sess):
+def get_parameter_count():
+    """
+        Example:
+        parameter_count = get_parameter_count()
+        print("Parameter Count =", sess.run(parameter_count))
+
+        :return:
+    """
     parameter_count = tf.reduce_sum([tf.reduce_prod(tf.shape(v)) for v in tf.trainable_variables()])
-    print("Parameter Count =", sess.run(parameter_count))
+    return parameter_count
 
 
-def print_graph_variables(trainable_only=False, sess=None, scope=None):
+def get_all_tf_variables(trainable_only=True, scope=None):
+    """
+        Example:
+        variables = utils.get_all_tf_variables()  # before session
+        with tf.Session() as sess:
+            for name, shape in sess.run(variables):
+                if len(list(shape)) > 1:
+                    print("   '%s' shape=%s" % (name, str(shape)))
+
+        :param trainable_only: if True, only return trainable_variables
+        :param scope:
+        :return:
+    """
     if trainable_only:
-        variables = [v for v in tf.trainable_variables()]
+        variables = tf.trainable_variables()
         variable_shapes = [tf.shape(v) for v in tf.trainable_variables()]
     else:
-        variables = [v for v in tf.global_variables()]
+        variables = tf.global_variables()
         variable_shapes = [tf.shape(v) for v in tf.global_variables()]
 
-    if trainable_only:
-        print('Trainable ', end='')
+    var_list = []
+    varshape_list = []
+    for k, v in zip(variables, variable_shapes):
+        if not scope or k[:len(scope)] == scope:
+            var_list.append(tf.constant(k.name))
+            varshape_list.append(v)
 
-    print('Variables')
-
-    if sess is not None:
-        # sess.run(tf.shape(variables)) to get exact shape of variables
-        values = sess.run(variable_shapes)
-        for k, v in zip(variables, values):
-            if not scope or k[:len(scope)] == scope:
-                print("   '%s' shape=%s" % (k.name, v))
-    else:
-        for n in variables:
-            if not scope or n[:len(scope)] == scope:
-                print("   '%s' shape=%s" % (n.name, n.shape))
+    return list(zip(var_list, varshape_list))
 
 
 def print_graph_collections():
