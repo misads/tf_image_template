@@ -26,3 +26,27 @@ def batchnorm(inputs):
                                          gamma_initializer=tf.random_normal_initializer(1.0, 0.02))
 
 
+def lr_decay(global_step, starter_learning_rate=0.0002, end_learning_rate=0.0, start_decay_step=100000, decay_steps=100000):
+    """
+
+        :param global_step: a global_step variable tensor
+        :param starter_learning_rate:
+        :param end_learning_rate:
+        :param start_decay_step: after this step, learning_rate will decay
+        :param decay_steps: learning_rate will decay to end_learning_rate after decay_steps
+            total_step = (start_decay_step + decay_steps)
+        :return:
+    """
+    learning_rate = (
+        tf.where(
+            tf.greater_equal(global_step, start_decay_step),
+            tf.train.polynomial_decay(starter_learning_rate, global_step - start_decay_step,
+                                      decay_steps, end_learning_rate,
+                                      power=1.0),
+            starter_learning_rate
+        )
+
+    )
+    return learning_rate
+
+

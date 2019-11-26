@@ -22,7 +22,7 @@ import tensorflow as tf
 from models.losses import L1, L2
 from models.process import transform, depart_input_target_pair, deprocess, upscale
 from models.base_model import BaseModel
-from models.modules import generator
+from models.modules import Generator
 import utils.misc_utils as utils
 
 
@@ -175,7 +175,7 @@ class MyNet(BaseModel):
         batch = self._batch
         eps = 1e-12
 
-        paths, inputs, targets = batch['paths'], batch['inputs'], batch['targets']
+        paths, x, y = batch['paths'], batch['inputs'], batch['targets']
 
         """
             ======================================
@@ -185,10 +185,9 @@ class MyNet(BaseModel):
         """
 
         with tf.variable_scope("generator"):
-            out_channels = int(targets.get_shape()[-1])
-            outputs = generator(inputs, out_channels, args.ngf)
-
-
+            out_channels = int(y.get_shape()[-1])
+            G = Generator(out_channels, args.ngf)
+            outputs = G(x)
 
         """
             ======================================
@@ -198,8 +197,8 @@ class MyNet(BaseModel):
         """
 
         with tf.variable_scope('losses'):
-            l1_loss = L1(targets, outputs)
-            l2_loss = L2(targets, outputs)
+            l1_loss = L1(y, outputs)
+            l2_loss = L2(y, outputs)
 
         loss = l1_loss * 100 + l2_loss
 

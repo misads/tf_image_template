@@ -31,12 +31,12 @@ A template for tensorflow image handling project.
 
 ### Train your own network
 ```shell script
-    python main.py --train --input_dir train/ --output_dir checkpoint/ --epochs 100 --which_direction BtoA [--resume]
+    python3 main.py --train --input_dir train/ --output_dir checkpoint/ --epochs 100 --which_direction BtoA [--resume]
 ```
 
 ### Test the model
 ```shell script
-    python main.py --test --input_dir val/ --output_dir test_results/ --checkpoint checkpoint/ 
+    python3 main.py --test --input_dir val/ --output_dir test_results/ --checkpoint checkpoint/ 
 ```
 
 ### Visulization
