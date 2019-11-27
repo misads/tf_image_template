@@ -363,7 +363,7 @@ class MyNet(BaseModel):
                     Todo 
                     Add your evaluation code here
                 """
-                if step != 0 and step % args.eva_freq == 0:
+                if step != 0 and step % args.eva_freq == 0 and args.val_dir:
                     self._eval(sess)
 
     def _eval(self, sess):

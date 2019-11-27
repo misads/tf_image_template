@@ -4,7 +4,7 @@ Misc system, image process and TensorFlow utils
 
 Author: xuhaoyu@tju.edu.cn
 
-update 11.25
+update 11.26
 
 Usage:
     `import misc_utils as utils`
@@ -18,6 +18,8 @@ import sys
 import time
 
 import cv2
+from PIL import Image
+from PIL import ImageFilter
 import numpy as np
 import tensorflow as tf
 from tensorflow.python import pywrap_tensorflow
@@ -263,6 +265,17 @@ def is_file_image(filename):
         return False
 
     return True
+
+
+def img_filter(img_path):
+    img = Image.open(img_path)
+    # img = img.convert("RGB")
+    # imgfilted = img.filter(ImageFilter.FIND_EDGES)
+    imgfilted = img.filter(ImageFilter.SHARPEN)
+    imgfilted = imgfilted.filter(ImageFilter.SHARPEN)
+    imgfilted = imgfilted.filter(ImageFilter.SHARPEN)
+    # imgfilted = imgfilted.filter(ImageFilter.SHARPEN)
+    imgfilted.show()
 
 
 #############################
