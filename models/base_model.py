@@ -13,6 +13,7 @@ import sys
 
 import tensorflow as tf
 import utils.misc_utils as utils
+import utils.tf_utils as tf_utils
 
 
 class BaseModel(object):
@@ -69,7 +70,7 @@ class BaseModel(object):
         variable_shapes = [tf.shape(v) for v in tf.trainable_variables()]  # or tf.global_variables
 
         scope = None
-        self._debug['variables'] = utils.get_all_tf_variables(trainable_only=True, scope=scope)
+        self._debug['variables'] = tf_utils.get_all_tf_variables(trainable_only=True, scope=scope)
         # Usage:
         # for k, v in sess.run(self._debug['variables']):
         #     print("   '%s' shape=%s" % (k, str(v)))

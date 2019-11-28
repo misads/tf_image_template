@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 from models.ops import g_deconv, batchnorm, g_conv, d_conv
-from utils.misc_utils import lrelu
+from models.ops import lrelu
 
 
 class Generator(object):

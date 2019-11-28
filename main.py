@@ -11,6 +11,7 @@ from data_loader.pipeline import PipeLine
 from models.mynet import MyNet
 
 from utils.misc_utils import *
+from utils.tf_utils import set_random_seed
 
 parser = argparse.ArgumentParser()
 # directories

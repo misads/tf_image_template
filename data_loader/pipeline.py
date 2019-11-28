@@ -10,7 +10,8 @@ update 11.25
 import os
 import tensorflow as tf
 
-from utils.misc_utils import get_file_paths_by_pattern, get_file_name, create_global_step, color_print
+from utils.misc_utils import get_file_paths_by_pattern, get_file_name, color_print
+from utils.tf_utils import create_global_step
 
 
 class PipeLineV1(object):

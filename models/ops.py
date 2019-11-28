@@ -26,10 +26,6 @@ def g_deconv(batch_input, out_channels):
     convs
 """
 
-
-
-
-
 """
     ==============================
     norms
@@ -62,6 +58,18 @@ def _biases(name, shape, constant=0.0):
 
 def _leaky_relu(input, slope):
     return tf.maximum(slope * input, input)
+
+
+def lrelu(x, a):
+    with tf.name_scope("lrelu"):
+        # adding these together creates the leak part and linear part
+        # then cancels them out by subtracting/adding an absolute value term
+        # leak: a*x/2 - a*abs(x)/2
+        # linear: x/2 + abs(x)/2
+
+        # this block looks like it has 2 inputs on the graph unless we do this
+        x = tf.identity(x)
+        return (0.5 * (1 + a)) * x + (0.5 * (1 - a)) * tf.abs(x)
 
 
 def _norm(input, is_training, norm='instance'):

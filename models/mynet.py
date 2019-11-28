@@ -25,6 +25,7 @@ from models.process import transform, depart_input_target_pair, deprocess, upsca
 from models.base_model import BaseModel
 from models.modules import Generator
 import utils.misc_utils as utils
+import utils.tf_utils as tf_utils
 
 
 class MyNet(BaseModel):
@@ -285,7 +286,7 @@ class MyNet(BaseModel):
 
         logdir = args.log_dir if (args.trace_freq > 0 or args.summary_freq > 0) else None
 
-        tfconfig = utils.allow_gpu_growth_config()
+        tfconfig = tf_utils.allow_gpu_growth_config()
         sv = tf.train.Supervisor(logdir=logdir, save_summaries_secs=0, saver=None)
         with sv.managed_session(config=tfconfig) as sess:
             # print parameter info
