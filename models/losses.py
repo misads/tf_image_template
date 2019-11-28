@@ -1,4 +1,5 @@
 import tensorflow as tf
+import models.ops as ops
 
 
 def L1(targets, outputs):
@@ -8,7 +9,17 @@ def L1(targets, outputs):
 
 def L2(targets, outputs):
     with tf.name_scope("L2_loss"):
-        return tf.sqrt(tf.nn.l2_loss(tf.abs(targets - outputs)))
+        # l2 = tf.square(targets - outputs) / 2
+        # return tf.reduce_mean(tf.sqrt(l2))
+        return tf.reduce_mean(tf.sqrt(tf.nn.l2_loss(tf.abs(targets - outputs))))
+
+
+def bin_cross_entropy(targets, outputs):
+    z = targets
+    x = outputs
+    log = ops.safe_log
+    cross_entropy = - z * log(x) - (1-z) * log(1-x)
+    return tf.reduce_mean(cross_entropy)
 
 
 def softmax_cross_entropy(targets, outputs):

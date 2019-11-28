@@ -139,3 +139,7 @@ def lr_decay(global_step, starter_learning_rate=0.0002, end_learning_rate=0.0, s
 
     )
     return learning_rate
+
+
+def safe_log(x, eps=1e-12):
+    return tf.log(x + eps)

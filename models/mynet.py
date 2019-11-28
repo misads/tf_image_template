@@ -19,7 +19,8 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from models.losses import L1, L2
+from models import ops
+from models.losses import L1, L2, bin_cross_entropy
 from models.process import transform, depart_input_target_pair, deprocess, upscale
 from models.base_model import BaseModel
 from models.modules import Generator
@@ -200,7 +201,18 @@ class MyNet(BaseModel):
             l1_loss = L1(y, outputs)
             l2_loss = L2(y, outputs)
 
-        loss = l1_loss * 100 + l2_loss
+            y_sigmoid = tf.nn.sigmoid(y)
+            outputs_sigmoid = tf.nn.sigmoid(outputs)
+
+            y_norm = (y+1)/2
+            outputs_norm = (outputs+1)/2
+
+            cross_entropy = bin_cross_entropy(y_norm, outputs_norm)
+
+            #cross_entropy = tf.reduce_min(outputs_sigmoid)
+
+        #loss = l1_loss * 100 + l2_loss + cross_entropy * 200
+        loss = l1_loss * 100 + l2_loss + cross_entropy * 20
 
 
 
@@ -224,13 +236,15 @@ class MyNet(BaseModel):
            ===================================
         """
         ema = tf.train.ExponentialMovingAverage(decay=0.99)  # MovingAverage
-        update_losses = ema.apply([l1_loss, l2_loss])
+        update_losses = ema.apply([l1_loss, l2_loss, cross_entropy])
 
         global_step = tf.train.get_or_create_global_step()
         incr_global_step = tf.assign(global_step, global_step + 1)
 
         self._losses['L1_loss'] = ema.average(l1_loss)
         self._losses['L2_loss'] = ema.average(l2_loss)
+        self._losses['cross_entropy'] = ema.average(cross_entropy)
+        # self._losses['cross_entropy'] = cross_entropy
 
         self._outputs['outputs'] = outputs
         self._train = tf.group(update_losses, incr_global_step, trainer)
@@ -346,8 +360,8 @@ class MyNet(BaseModel):
                     remaining = (self._max_steps - step) * args.batch_size / rate
 
                     # progress bar
-                    msg = '(loss) L1:%.3f L2:%.3f | ETA: %s' % (
-                        results["L1_loss"], results["L2_loss"],
+                    msg = '(loss) L1:%.3f L2:%.3f C:%.3f | ETA: %s' % (
+                        results["L1_loss"], results["L2_loss"],  results["cross_entropy"],
                         utils.format_time(remaining))
                     pre_msg = 'Epoch:%d ' % train_epoch
                     if train_epoch > 0 and train_step > 0:
